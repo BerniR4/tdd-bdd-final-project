@@ -104,3 +104,61 @@ class TestProductModel(unittest.TestCase):
     #
     # ADD YOUR TEST CASES HERE
     #
+    def test_read_a_product(self):
+        """It should Read a product"""
+        product = ProductFactory()
+        app.logger.info(product)
+        product.id = None
+        product.create()
+        self.assertIsNotNone(product.id)
+        # Read product by id
+        read_product = Product.find(product.id)
+        # Assert that it is the same as the one stored
+        self.assertEqual(read_product.id, product.id)
+        self.assertEqual(read_product.description, product.description)
+        self.assertEqual(read_product.price, product.price)
+        self.assertEqual(read_product.available, product.available)
+        self.assertEqual(read_product.category, product.category)
+
+    def test_update_a_product(self):
+        """It should Update a product"""
+        product = ProductFactory()
+        app.logger.info(product)
+        product.id = None
+        product.create()
+        app.logger.info(product)
+        current_id = product.id
+        # Modify the product
+        product.description = "This is a test description"
+        product.update()
+        # Assert that it has been properly updated
+        all_products = Product.all()
+        self.assertEqual(len(all_products), 1)
+        self.assertEqual(product.id, current_id)
+        self.assertEqual(product.description, "This is a test description")
+
+    def test_list_all_products(self):
+        """It should List all products"""
+        products = Product.all()
+        self.assertEqual(len(products), 0)
+        # Create Products
+        for _ in range(0, 5):
+            product = ProductFactory()
+            product.id = None
+            product.create()
+        # Assert that they have been created and can be listed
+        products = Product.all()
+        self.assertEqual(len(products), 5)
+
+    def test_find_a_product_by_name(self):
+        """It should List all products"""
+        # Create Products
+        products = ProductFactory.create_batch(5)
+        for p in products:
+            p.id = None
+            p.create()
+        first_product = products[0]
+        
+        # Assert that they have been created and can be listed
+        products = Product.all()
+        self.assertEqual(len(products), 5)
