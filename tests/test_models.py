@@ -27,7 +27,7 @@ import os
 import logging
 import unittest
 from decimal import Decimal
-from service.models import Product, Category, db
+from service.models import Product, Category, db, DataValidationError
 from service import app
 from tests.factories import ProductFactory
 
@@ -136,6 +136,9 @@ class TestProductModel(unittest.TestCase):
         self.assertEqual(len(all_products), 1)
         self.assertEqual(product.id, current_id)
         self.assertEqual(product.description, "This is a test description")
+        # Assert that updating a product with no ID throws an exception
+        product.id = None
+        self.assertRaises(DataValidationError, product.update)
 
     def test_delete_a_product(self):
         """It should Delete a product"""
@@ -212,3 +215,21 @@ class TestProductModel(unittest.TestCase):
         self.assertEqual(find_all.count(), occurrences)
         for p in find_all:
             self.assertEqual(p.category, first_category)
+
+    def test_find_a_product_by_price(self):
+        """It should Find all products by price"""
+        # Create Products
+        products = ProductFactory.create_batch(10)
+        for p in products:
+            p.id = None
+            p.create()
+        first_price = products[0].price
+        # Get number of occurrences for the same product availability
+        occurrences = len([x for x in products if x.price == first_price])
+        # Get number of occurrences for the same product availability in the db
+        find_all = Product.find_by_price(str(first_price))
+        # Assert that find_by_name got all the products with the same name
+        self.assertEqual(find_all.count(), occurrences)
+        for p in find_all:
+            self.assertEqual(p.price, first_price)
+        
