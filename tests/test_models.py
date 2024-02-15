@@ -137,6 +137,18 @@ class TestProductModel(unittest.TestCase):
         self.assertEqual(product.id, current_id)
         self.assertEqual(product.description, "This is a test description")
 
+    def test_delete_a_product(self):
+        """It should Delete a product"""
+        product = ProductFactory()
+        product.id = None
+        product.create()
+        # Assert that there is only one product
+        all_products = Product.all()
+        self.assertEqual(len(all_products), 1)
+        product.delete()
+        all_products = Product.all()
+        self.assertEqual(len(all_products), 0)
+
     def test_list_all_products(self):
         """It should List all products"""
         products = Product.all()
@@ -151,7 +163,7 @@ class TestProductModel(unittest.TestCase):
         self.assertEqual(len(products), 5)
 
     def test_find_a_product_by_name(self):
-        """It should List all products"""
+        """It should Find all products with a given name"""
         # Create Products
         products = ProductFactory.create_batch(5)
         for p in products:
@@ -166,3 +178,37 @@ class TestProductModel(unittest.TestCase):
         self.assertEqual(find_all.count(), occurrences)
         for p in find_all:
             self.assertEqual(p.name, first_name)
+
+    def test_find_a_product_by_availability(self):
+        """It should Find all products by availability"""
+        # Create Products
+        products = ProductFactory.create_batch(10)
+        for p in products:
+            p.id = None
+            p.create()
+        first_availability = products[0].available
+        # Get number of occurrences for the same product availability
+        occurrences = len([x for x in products if x.available == first_availability])
+        # Get number of occurrences for the same product availability in the db
+        find_all = Product.find_by_availability(first_availability)
+        # Assert that find_by_name got all the products with the same name
+        self.assertEqual(find_all.count(), occurrences)
+        for p in find_all:
+            self.assertEqual(p.available, first_availability)
+
+    def test_find_a_product_by_category(self):
+        """It should Find all products by category"""
+        # Create Products
+        products = ProductFactory.create_batch(10)
+        for p in products:
+            p.id = None
+            p.create()
+        first_category = products[0].category
+        # Get number of occurrences for the same product availability
+        occurrences = len([x for x in products if x.category == first_category])
+        # Get number of occurrences for the same product availability in the db
+        find_all = Product.find_by_category(first_category)
+        # Assert that find_by_name got all the products with the same name
+        self.assertEqual(find_all.count(), occurrences)
+        for p in find_all:
+            self.assertEqual(p.category, first_category)
