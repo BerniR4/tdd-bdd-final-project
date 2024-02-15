@@ -105,24 +105,55 @@ def create_products():
 ######################################################################
 # R E A D   A   P R O D U C T
 ######################################################################
+@app.route("/products/<int:product_id>")
+def get_products(product_id):
+    """
+    Get a Product
+    This endpoint will get a Product based on the product ID from the path
+    """
+    app.logger.info(f"Request to Retrieve a product with id [{product_id}]")
 
-#
-# PLACE YOUR CODE HERE TO READ A PRODUCT
-#
+    product = Product.find(product_id)
+    if product is None:
+        abort(status.HTTP_404_NOT_FOUND, f"Product with id '{product_id}' was not found.")
+
+    app.logger.info(f"Returning product: {product.name}")
+    return product.serialize(), status.HTTP_200_OK
+
 
 ######################################################################
 # U P D A T E   A   P R O D U C T
 ######################################################################
+@app.route("/products/<int:product_id>", methods=['PUT'])
+def update_products(product_id):
+    """
+    Update a Product
+    This endpoint will update a Product based on the product ID from the path and the data in the body
+    """
+    app.logger.info("Request to Update a product with id [{product_id}]")
 
-#
-# PLACE YOUR CODE TO UPDATE A PRODUCT HERE
-#
+    product = Product.find(product_id)
+    if product is None:
+        abort(status.HTTP_404_NOT_FOUND, f"Product with id '{product_id}' was not found.")
+
+    product.deserialize(request.json)
+    product.update()
+    app.logger.info(f"Returning updated product: {product.name}")
+    return product.serialize(), status.HTTP_200_OK
 
 ######################################################################
 # D E L E T E   A   P R O D U C T
 ######################################################################
+@app.route("/products/<int:product_id>", methods=['DELETE'])
+def delete_products(product_id):
+    """
+    Delete a Product
+    This endpoint will delete a Product based on the product ID from the path
+    """
+    app.logger.info("Request to Delete a product with id [{product_id}]")
 
+    product = Product.find(product_id)
+    if product:
+        product.delete()
 
-#
-# PLACE YOUR CODE TO DELETE A PRODUCT HERE
-#
+    return "", status.HTTP_204_NO_CONTENT
