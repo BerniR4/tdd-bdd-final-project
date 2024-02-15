@@ -107,7 +107,7 @@ class TestProductModel(unittest.TestCase):
     def test_read_a_product(self):
         """It should Read a product"""
         product = ProductFactory()
-        app.logger.info(product)
+        app.logger.info(str(product))
         product.id = None
         product.create()
         self.assertIsNotNone(product.id)
@@ -123,10 +123,10 @@ class TestProductModel(unittest.TestCase):
     def test_update_a_product(self):
         """It should Update a product"""
         product = ProductFactory()
-        app.logger.info(product)
+        app.logger.info(str(product))
         product.id = None
         product.create()
-        app.logger.info(product)
+        app.logger.info(str(product))
         current_id = product.id
         # Modify the product
         product.description = "This is a test description"
@@ -157,8 +157,12 @@ class TestProductModel(unittest.TestCase):
         for p in products:
             p.id = None
             p.create()
-        first_product = products[0]
-        
-        # Assert that they have been created and can be listed
-        products = Product.all()
-        self.assertEqual(len(products), 5)
+        first_name = products[0].name
+        # Get number of occurrences for the same product name
+        occurrences = len([x for x in products if x.name == first_name])
+        # Get number of occurrences for the same product name in the db
+        find_all = Product.find_by_name(first_name)
+        # Assert that find_by_name got all the products with the same name
+        self.assertEqual(find_all.count(), occurrences)
+        for p in find_all:
+            self.assertEqual(p.name, first_name)
