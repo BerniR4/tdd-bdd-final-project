@@ -52,7 +52,7 @@ def step_impl(context):
             'description': row['description'],
             'price': row['price'],
             'available': row['available'] in ['True', 'true', '1'],
-            'category': row['category'],
+            'category': row['category']
         }
-        response = requests.post(context.base_url, json=product)
+        response = requests.post(rest_endpoint, json=product)
         assert response.status_code == HTTP_201_CREATED

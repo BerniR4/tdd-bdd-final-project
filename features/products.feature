@@ -61,7 +61,7 @@ Scenario: Update a Product
     And I press the "Search" button
     Then I should see the message "Success"
     And I should see "1/4 lb burger" in the "Description" field
-    When I change the "Price" to "123.42"
+    When I change "Name" to "Test"
     And I press the "Update" button
     Then I should see the message "Success"
     When I copy the "Id" field
@@ -69,9 +69,11 @@ Scenario: Update a Product
     And I paste the "Id" field
     And I press the "Retrieve" button
     Then I should see the message "Success"
-    And I should see "Big Mac" in the "Name" field
-    And I should see "123.42" in the results
-    And I should not see "5.99" in the results
+    When I press the "Clear" button
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "Test" in the results
+    And I should not see "Big Mac" in the results
 
 Scenario: Delete a Product
     When I visit the "Home Page"
@@ -111,7 +113,8 @@ Scenario: Search by Category
 
 Scenario: Search by Available
     When I visit the "Home Page"
-    And I select "Available" in the "Available" dropdown
+    And I press the "Clear" button
+    And I select "True" in the "Available" dropdown
     And I press the "Search" button
     Then I should see the message "Success"
     And I should see "Hat" in the results
